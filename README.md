@@ -4,6 +4,8 @@
 
 **Sector:** self-hosted, running on the author's own consulting business (dogfooding) · **Role:** sole author and operator · **Stack:** Python · Anthropic SDK with prompt caching · Claude Code skills (SKILL.md) · Asana API · SMTP · GitHub PR workflow · **Status:** in production since 2026-09, powering an active blog
 
+*Writeup prepared October 2026 for a system in active production since September 2026. The orchestrator, agent prompts, and author's writing-voice corpus remain private.*
+
 The system is designed around a single operational constraint: the author will not let the model set the thesis of an article. Every other decision in the pipeline follows from that one.
 
 ---
