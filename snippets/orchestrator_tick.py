@@ -1,5 +1,5 @@
 """
-orchestrator_tick.py — anonymised excerpt of the state-machine driver.
+orchestrator_tick.py — anonymized excerpt of the state-machine driver.
 
 A single `tick()` reads the Asana project state, selects the first task that is
 ready to advance according to the pipeline's state machine, calls the right
@@ -48,7 +48,7 @@ TRANSITIONS: dict[str, tuple[str, str, str]] = {
 
 @dataclass
 class TaskState:
-    """One Asana task plus the local artefacts for its slug."""
+    """One Asana task plus the local artifacts for its slug."""
 
     gid: str
     name: str

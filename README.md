@@ -36,17 +36,17 @@ Three concrete constraints shape the production system:
 - **Explicit anti-patterns.** Certain topics are off-limits because they contradict positioning decisions already made elsewhere (no promotion of specific low-margin tools, no "trending AI topics" framing). An article that violates these turns months of positioning work into content that undoes it.
 - **One operator.** The author writes, operates the business, and runs the content system. Any step that cannot be delegated to an agent has to be fast and tolerant of interruption.
 
-The pipeline is designed to resolve these three constraints with one architectural answer: specialise each stage of production to one job, make the output of each stage inspectable, and keep the human only in the places where the human adds judgment the model cannot.
+The pipeline is designed to resolve these three constraints with one architectural answer: specialize each stage of production to one job, make the output of each stage inspectable, and keep the human only in the places where the human adds judgment the model cannot.
 
 ## 2. Why a multi-agent system rather than a single prompt
 
 A single prompt that takes "write an article about X" and returns a finished piece is the baseline. It is faster to build and cheaper to run. The multi-agent decomposition is justified when three conditions hold at the same time.
 
-**Different stages optimise for contradictory criteria.** The Writer optimises for sustaining a single thesis across 1,500 words. The Titler optimises for tension and click-through, which is sometimes at odds with faithful summarisation. The Technical Critic optimises for falsifiability and the Style Critic optimises for a specific set of pattern violations. Asking a single model to balance all four produces output that is average on each axis.
+**Different stages optimize for contradictory criteria.** The Writer optimizes for sustaining a single thesis across 1,500 words. The Titler optimizes for tension and click-through, which is sometimes at odds with faithful summarization. The Technical Critic optimizes for falsifiability and the Style Critic optimizes for a specific set of pattern violations. Asking a single model to balance all four produces output that is average on each axis.
 
-**Intermediate outputs are inspectable and reusable.** A monolithic prompt returns one artefact. A seven-stage pipeline returns seven, which means the author can replace or re-run a single stage without regenerating the rest. If the title is wrong, the fix is one Titler re-run with a different seed, not a full regeneration that may change the body.
+**Intermediate outputs are inspectable and reusable.** A monolithic prompt returns one artifact. A seven-stage pipeline returns seven, which means the author can replace or re-run a single stage without regenerating the rest. If the title is wrong, the fix is one Titler re-run with a different seed, not a full regeneration that may change the body.
 
-**Failure modes compose predictably.** When the single-prompt output is wrong, the author has to diagnose the whole chain of reasoning in one shot. With specialised agents, failure is localised: the Technical Critic rejects a specific claim with a specific reason, and only the Writer re-runs. Debugging a system that fails one step at a time is tractable in a way that debugging a monolithic generator is not.
+**Failure modes compose predictably.** When the single-prompt output is wrong, the author has to diagnose the whole chain of reasoning in one shot. With specialized agents, failure is localized: the Technical Critic rejects a specific claim with a specific reason, and only the Writer re-runs. Debugging a system that fails one step at a time is tractable in a way that debugging a monolithic generator is not.
 
 ## 3. Architecture overview
 
@@ -59,7 +59,7 @@ Seven agents, orchestrated as a state machine with Asana as the visible state st
 | Technical Critic | Reads the draft and checks factual claims, falsifiability of promises, internal consistency | Pass or revision list |
 | Style Critic | Reads the draft and checks the voice rubric (prohibited patterns, hedging caps, meta-commentary, LLM signatures) | Pass or revision list |
 | Titler | Runs after Style passes. Generates 3 to 5 title and dek variants with distinct angles, scores each on five criteria, picks the highest | Final title plus dek |
-| Visualiser | Decides whether the article needs a structural diagram (architecture, comparative, decision flow). If yes, produces an inline SVG with the studio's palette. Always produces a spec plus prompt for the hero image | SVG files, hero spec |
+| Visualizer | Decides whether the article needs a structural diagram (architecture, comparative, decision flow). If yes, produces an inline SVG with the studio's palette. Always produces a spec plus prompt for the hero image | SVG files, hero spec |
 | Derivator | Takes the approved article and derives four LinkedIn pieces (long-form post, short post, carousel, poll) | `approved/{slug}/linkedin.md` |
 
 The orchestrator moves tasks through Asana sections as agents finish their steps. The publisher reads tasks from "Ready to publish", generates the HTML, updates the sitemap, replaces the index CTA, removes `noindex` from the stub, and opens a pull request against the website's main branch. The merge is manual.
@@ -108,7 +108,7 @@ So the Titler is a separate agent that runs after both Critics approve the draft
 
 Each variant is scored on five criteria (substitution test, falsifiability, concrete pain, qualifier presence, length within range). The Titler picks the highest-scoring variant and writes it plus a two-line dek to the article front matter. The author does not approve the title in the loop. The author edits directly in the final article file if the Titler's choice is wrong.
 
-The design cost of this separation is one extra agent call per article. The design benefit is that the Writer's optimisation function is cleaner (sustain the thesis, not also hook the reader), and the Titler's optimisation function is explicit (tension plus falsifiability, not faithfulness to the argument). Each agent is simpler as a result.
+The design cost of this separation is one extra agent call per article. The design benefit is that the Writer's optimization function is cleaner (sustain the thesis, not also hook the reader), and the Titler's optimization function is explicit (tension plus falsifiability, not faithfulness to the argument). Each agent is simpler as a result.
 
 ## 7. Two layers of style enforcement: deterministic linter plus LLM critic
 
@@ -132,7 +132,7 @@ Rules that cannot be made deterministic without producing noise (K2 reformulativ
 
 The author's manual edits on approved articles are recorded in `writing_voice/learnings.md` in a structured format: *what I changed, why, emergent rule*. The Writer, both Critics and the Derivator load this file as part of their corpus at every call.
 
-The feedback loop improves agent behaviour without any model-level change. New rules emerge from the edits, land in the shared corpus, and show up in the next cycle's outputs. The alternative design (an "observer" agent that compares v1 drafts to final published versions and proposes rules) was deferred: without a volume of 8 to 10 published articles, the observer would surface noise rather than patterns. The manual learning log is cheap, immediate and auditable.
+The feedback loop improves agent behavior without any model-level change. New rules emerge from the edits, land in the shared corpus, and show up in the next cycle's outputs. The alternative design (an "observer" agent that compares v1 drafts to final published versions and proposes rules) was deferred: without a volume of 8 to 10 published articles, the observer would surface noise rather than patterns. The manual learning log is cheap, immediate and auditable.
 
 The design assumes the author will keep writing edits. A system that depends on continued human input to improve is honest about its limits. It is not making a claim that the model learns on its own. The improvement is in the corpus, not the weights.
 
@@ -169,8 +169,8 @@ The PR itself is the second lock. Vercel deploys automatically from main, so the
 ### 10.2 What is in this repository
 
 - `README.md`, this case study.
-- `snippets/orchestrator_tick.py`, the state-machine driver function, anonymised and reduced to show the control flow of a single tick.
-- `snippets/llm_patterns.py`, the deterministic linter for LLM-signature patterns (§7), with the regex catalogue intact and the frequency-cap thresholds set to the actual production values.
+- `snippets/orchestrator_tick.py`, the state-machine driver function, anonymized and reduced to show the control flow of a single tick.
+- `snippets/llm_patterns.py`, the deterministic linter for LLM-signature patterns (§7), with the regex catalog intact and the frequency-cap thresholds set to the actual production values.
 - `snippets/skill_structure.md`, a redacted `SKILL.md` showing the structural pattern each agent follows (role, inputs, process, output format), with the specific voice rules replaced by placeholders.
 
 The three snippets together illustrate the three load-bearing design patterns of the system (state machine, deterministic plus LLM layered quality, prompt-as-skill-file). They are not a runnable system.
@@ -178,9 +178,9 @@ The three snippets together illustrate the three load-bearing design patterns of
 ## 11. What this case study demonstrates
 
 - **A production design decision stated as a constraint, not a feature.** "The thesis is not automated" is the first and strongest design decision. Every other architectural choice follows from it or supports it. Case studies that lead with technique often omit the constraint that forced the technique.
-- **Multi-agent decomposition justified against the single-prompt baseline**, with three concrete criteria (contradictory stage optimisations, inspectable intermediate outputs, localised failure modes). The alternative is explicitly compared, not assumed inferior.
+- **Multi-agent decomposition justified against the single-prompt baseline**, with three concrete criteria (contradictory stage optimizations, inspectable intermediate outputs, localized failure modes). The alternative is explicitly compared, not assumed inferior.
 - **Hybrid runtime that reflects the actual boundary.** Skills run where interactivity matters; Python runs where determinism and scheduling matter. The split is architectural, not stylistic.
-- **Determinism and interpretation treated as separate quality layers.** The regex linter catches what regex is good at; the LLM critic catches what interpretation is for. The division of labour is explicit in the code, not implicit in the agent's prompt.
+- **Determinism and interpretation treated as separate quality layers.** The regex linter catches what regex is good at; the LLM critic catches what interpretation is for. The division of labor is explicit in the code, not implicit in the agent's prompt.
 - **Feedback loop that is honest about its mechanism.** Improvement happens through a human-maintained corpus of edits, not through model updates. The system does not claim to learn; it claims to use what the human has taught it.
 - **One human gate, one lock, one visible state machine.** The publishing checkpoint plus the PR merge plus the Asana sections together produce a system whose quality guarantee is auditable: an article shipped exactly if the author approved it twice (section move plus merge).
 

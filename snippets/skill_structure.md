@@ -54,7 +54,7 @@ Example structure for the Writer:
 3. **Draft the body.** Write one paragraph per sub-argument. Do not open with
    meta-commentary (see K5 in the style rubric). The dek carries the thesis;
    the body enters directly into the first sub-argument.
-4. **Self-check against the K catalogue.** Scan the draft for the ten
+4. **Self-check against the K catalog.** Scan the draft for the ten
    families of prohibited patterns. Note any detected and fix inline.
 5. **Write output.** Save to `outputs/drafts/<slug>/v1.md` with front matter.
 
@@ -73,8 +73,8 @@ Example structure for the Writer:
 ## Rules enforced inline
 
 The agent's prompt includes the subset of the voice rubric that is specific
-to this stage. The Writer's prompt includes the K catalogue plus the L
-catalogue (voice resources). The Critic's prompt includes the K catalogue
+to this stage. The Writer's prompt includes the K catalog plus the L
+catalog (voice resources). The Critic's prompt includes the K catalog
 plus the operational definitions of each K family. The division is deliberate:
 each agent only loads the rules it is responsible for enforcing.
 
